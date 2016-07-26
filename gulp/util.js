@@ -149,22 +149,25 @@ function buildModule(module, opts) {
   }
 
   function buildModuleStyles(name) {
+
     var files = [];
     config.themeBaseFiles.forEach(function(fileGlob) {
       files = files.concat(glob(fileGlob, { cwd: ROOT }));
     });
+
     var baseStyles = files.map(function(fileName) {
       return fs.readFileSync(fileName, 'utf8').toString();
     }).join('\n');
 
     return lazypipe()
         .pipe(insert.prepend, baseStyles)
-        .pipe(gulpif, /theme.scss/,
-          rename(name + '-default-theme.scss'), concat(name + '.scss')
-        )
+        .pipe(gulpif, /theme.scss/, rename(name + '-default-theme.scss'), concat(name + '.scss'))
+        // Theme files are suffixed with the `default-theme.scss` string.
+        // In some cases there are multiple theme SCSS files, which should be concatenated together.
+        .pipe(gulpif, /default-theme.scss/, concat(name + '-default-theme.scss'))
         .pipe(sass)
         .pipe(autoprefix)
-    (); // invoke the returning fn to create our pipe
+    (); // Invoke the returning lazypipe function to create our new pipe.
   }
 
 }
@@ -172,7 +175,7 @@ function buildModule(module, opts) {
 function readModuleArg() {
   var module = args.c ? 'material.components.' + args.c : (args.module || args.m);
   if (!module) {
-    gutil.log('\nProvide a compnent argument via `-c`:',
+    gutil.log('\nProvide a component argument via `-c`:',
         '\nExample: -c toast');
     gutil.log('\nOr provide a module argument via `--module` or `-m`.',
         '\nExample: --module=material.components.toast or -m material.components.dialog');

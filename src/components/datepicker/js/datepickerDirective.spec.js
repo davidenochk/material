@@ -126,7 +126,7 @@ describe('md-datepicker', function() {
     }).not.toThrow();
   });
 
-  describe('ngMessages suport', function() {
+  describe('ngMessages support', function() {
     it('should set the `required` $error flag', function() {
       pageScope.isRequired = true;
       populateInputElement('');
@@ -243,6 +243,31 @@ describe('md-datepicker', function() {
 
         expect(formCtrl.$error['filtered']).toBeTruthy();
       });
+
+      it('should add the invalid class when the form is submitted', function() {
+        // This needs to be recompiled, in order to reproduce conditions where a form is
+        // submitted, without the datepicker having being touched (usually it has it's value
+        // set to `myDate` by default).
+        ngElement && ngElement.remove();
+        pageScope.myDate = null;
+        pageScope.isRequired = true;
+
+        createDatepickerInstance('<form>' + DATEPICKER_TEMPLATE + '</form>');
+
+        var formCtrl = ngElement.controller('form');
+        var inputContainer = ngElement.controller('mdDatepicker').inputContainer;
+
+        expect(formCtrl.$invalid).toBe(true);
+        expect(formCtrl.$submitted).toBe(false);
+        expect(inputContainer).not.toHaveClass('md-datepicker-invalid');
+
+        pageScope.$apply(function() {
+          formCtrl.$setSubmitted(true);
+        });
+
+        expect(formCtrl.$submitted).toBe(true);
+        expect(inputContainer).toHaveClass('md-datepicker-invalid');
+      });
     });
   });
 
@@ -294,6 +319,17 @@ describe('md-datepicker', function() {
 
       populateInputElement('cheese');
       expect(controller.inputContainer).toHaveClass('md-datepicker-invalid');
+    });
+
+    it('should toggle the invalid class when an external value causes the error state to change', function() {
+      pageScope.isRequired = true;
+      populateInputElement('');
+      expect(controller.inputContainer).toHaveClass('md-datepicker-invalid');
+
+      pageScope.$apply(function() {
+        pageScope.isRequired = false;
+      });
+      expect(controller.inputContainer).not.toHaveClass('md-datepicker-invalid');
     });
 
     it('should not update the model when value is not enabled', function() {
@@ -461,7 +497,9 @@ describe('md-datepicker', function() {
       // Expect that the calendar pane is in the same position as the inline datepicker.
       var paneRect = controller.calendarPane.getBoundingClientRect();
       var triggerRect = controller.inputContainer.getBoundingClientRect();
-      expect(paneRect.top).toBe(triggerRect.top);
+
+      // We expect the offset to be close to the exact height, because on IE there are some deviations.
+      expect(paneRect.top).toBeCloseTo(triggerRect.top, 0.5);
 
       // Restore body to pre-test state.
       body.removeChild(superLongElement);

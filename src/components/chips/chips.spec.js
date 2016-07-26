@@ -217,7 +217,7 @@ describe('<md-chips>', function() {
 
           expect(containers.length).toBe(0);
 
-          var removeContainer = wrap[0].querySelector('._md-chip-remove-container');
+          var removeContainer = wrap[0].querySelector('.md-chip-remove-container');
           expect(removeContainer).not.toBeTruthy();
         });
 
@@ -270,10 +270,10 @@ describe('<md-chips>', function() {
           // and a user-provided value.
           expect(controller.removable).toBe(undefined);
 
-          var containers = wrap[0].querySelectorAll("._md-chip-input-container");
+          var containers = wrap[0].querySelectorAll(".md-chip-input-container");
           expect(containers.length).not.toBe(0);
 
-          var removeContainer = wrap[0].querySelector('._md-chip-remove-container');
+          var removeContainer = wrap[0].querySelector('.md-chip-remove-container');
           expect(removeContainer).toBeTruthy();
         });
 
@@ -289,7 +289,7 @@ describe('<md-chips>', function() {
           expect(wrap.hasClass("md-removable")).toBe(false);
           expect(controller.removable).toBe(false);
 
-          var containers = wrap[0].querySelectorAll("._md-chip-remove-container");
+          var containers = wrap[0].querySelectorAll(".md-chip-remove-container");
           expect(containers.length).toBe(0);
 
           scope.$apply('removable = true');
@@ -297,7 +297,7 @@ describe('<md-chips>', function() {
           expect(wrap.hasClass("md-removable")).toBe(true);
           expect(controller.removable).toBe(true);
 
-          containers = wrap[0].querySelector("._md-chip-remove-container");
+          containers = wrap[0].querySelector(".md-chip-remove-container");
           expect(containers).toBeTruthy();
         });
 
@@ -367,12 +367,12 @@ describe('<md-chips>', function() {
 
           expect(ctrl.removable).toBeUndefined();
 
-          var removeContainer = wrap[0].querySelector('._md-chip-remove-container');
+          var removeContainer = wrap[0].querySelector('.md-chip-remove-container');
           expect(removeContainer).toBeFalsy();
 
           scope.$apply('isRemovable = true');
 
-          removeContainer = wrap[0].querySelector('._md-chip-remove-container');
+          removeContainer = wrap[0].querySelector('.md-chip-remove-container');
           expect(removeContainer).toBeTruthy();
         });
 
@@ -468,7 +468,10 @@ describe('<md-chips>', function() {
 
           // This string contains a lot of spaces, which should be trimmed.
           input.val('    Test    ');
-          input.triggerHandler('input');
+
+          // We have to trigger the `change` event, because IE11 does not support
+          // the `input` event to update the ngModel. An alternative for `input` is to use the `change` event.
+          input.triggerHandler('change');
 
           expect(ctrl.chipBuffer).toBeTruthy();
 
@@ -488,36 +491,49 @@ describe('<md-chips>', function() {
           var ctrl = element.controller('mdChips');
           var input = element.find('input');
 
+          // Add the element to the document's body, because otherwise we won't be able
+          // to set the selection of the chip input.
+          document.body.appendChild(element[0]);
+
           input.val('    ');
-          input.triggerHandler('input');
+
+          // We have to trigger the `change` event, because IE11 does not support
+          // the `input` event to update the ngModel. An alternative for `input` is to use the `change` event.
+          input.triggerHandler('change');
 
           // Since the `md-chips` component is testing the backspace select previous chip functionality by
           // checking the current caret / cursor position, we have to set the cursor to the end of the current
           // value.
           input[0].selectionStart = input[0].selectionEnd = input[0].value.length;
 
-          var enterEvent = {
+          var backspaceEvent = {
             type: 'keydown',
             keyCode: $mdConstant.KEY_CODE.BACKSPACE,
             which: $mdConstant.KEY_CODE.BACKSPACE,
             preventDefault: jasmine.createSpy('preventDefault')
           };
 
-          input.triggerHandler(enterEvent);
+          input.triggerHandler(backspaceEvent);
 
-          expect(enterEvent.preventDefault).not.toHaveBeenCalled();
+          expect(backspaceEvent.preventDefault).not.toHaveBeenCalled();
 
           input.val('');
-          input.triggerHandler('input');
 
           // Since the `md-chips` component is testing the backspace select previous chip functionality by
           // checking the current caret / cursor position, we have to set the cursor to the end of the current
           // value.
           input[0].selectionStart = input[0].selectionEnd = input[0].value.length;
 
-          input.triggerHandler(enterEvent);
+          input.triggerHandler(backspaceEvent);
 
-          expect(enterEvent.preventDefault).toHaveBeenCalledTimes(1);
+          // We have to trigger the `change` event, because IE11 does not support
+          // the `input` event to update the ngModel. An alternative for `input` is to use the `change` event.
+          input.triggerHandler('change');
+
+          expect(backspaceEvent.preventDefault).toHaveBeenCalledTimes(1);
+
+          // Remove the element from the document's body.
+          document.body.removeChild(element[0]);
         }));
       });
 
@@ -830,6 +846,10 @@ describe('<md-chips>', function() {
           setupScopeForAutocomplete();
           var element = buildChips(AUTOCOMPLETE_CHIPS_TEMPLATE);
 
+          // Add the element to the document's body, because otherwise we won't be able
+          // to set the selection of the chip input.
+          document.body.appendChild(element[0]);
+
           // The embedded `md-autocomplete` needs a timeout flush for it's initialization.
           $timeout.flush();
           $timeout.flush();
@@ -874,6 +894,9 @@ describe('<md-chips>', function() {
           scope.$digest();
 
           expect(backspaceEvent.preventDefault).toHaveBeenCalledTimes(1);
+
+          // Remove the chips element from the document's body.
+          document.body.removeChild(element[0]);
         }));
 
         it('simultaneously allows selecting an existing chip AND adding a new one', inject(function($mdConstant) {
