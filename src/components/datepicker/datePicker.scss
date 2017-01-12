@@ -1,11 +1,11 @@
 /** Styles for mdDatepicker. */
-$md-datepicker-button-gap: 12px !default;  // Space between the text input and the calendar-icon button.
+$md-datepicker-button-gap: 2px !default;  // Space between the text input and the calendar-icon button.
 $md-datepicker-border-bottom-gap: 5px !default;  // Space between input and the grey underline.
 $md-date-arrow-size: 5px !default; // Size of the triangle on the right side of the input.
 $md-datepicker-open-animation-duration: 0.2s !default;
 $md-datepicker-triangle-button-width: 36px !default;
 $md-datepicker-input-mask-height: 40px !default;
-$md-datepicker-button-padding: 8px !default;
+$md-datepicker-button-padding: 4px !default;
 
 
 md-datepicker {
@@ -39,6 +39,15 @@ md-datepicker {
     position: absolute;
     content: '';
     speak: none;
+  }
+
+  // Added to make the button aligned to the left rather than floating in the middle of the layout
+  &.md-icon-button{
+    margin-left:2px;
+    margin-right:2px;
+    width:27px;
+    padding-left:0;
+    padding-right:0;
   }
 }
 
@@ -79,7 +88,7 @@ md-datepicker {
       $offset: $md-datepicker-triangle-button-width / 2;
       @include rtl(right, $offset, auto);
       @include rtl(left, auto, $offset);
-      width: calc(100% - #{$width-offset});
+      width: calc(100% - #{$width-offset - 22});
     }
 
     .md-input-message-animation {

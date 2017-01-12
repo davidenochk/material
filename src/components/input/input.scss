@@ -1,10 +1,11 @@
 $input-container-padding: 2px !default;
 
-$input-label-default-offset: 24px !default;
+$input-label-default-offset: 26px !default;
 $input-label-default-scale: 1.0 !default;
-$input-label-float-offset: 6px !default;
-$input-label-float-scale: 0.75 !default;
+$input-label-float-offset: 14px !default;
+$input-label-float-scale: 0.9 !default;
 $input-label-float-width: $input-container-padding + 16px !default;
+$input-margin-top-bottom: 4px;
 
 $input-placeholder-offset: $input-label-default-offset !default;
 
@@ -13,8 +14,8 @@ $input-border-width-focused: 2px !default;
 $input-line-height: 26px !default;
 $input-padding-top: 2px !default;
 
-$input-error-font-size: 12px !default;
-$input-error-height: 24px !default;
+$input-error-font-size: 8px !default;
+$input-error-height: 12px !default;
 $input-error-line-height: $input-error-font-size + 2px !default;
 $error-padding-top: ($input-error-height - $input-error-line-height) / 2 !default;
 
@@ -31,7 +32,7 @@ md-input-container {
   display: inline-block;
   position: relative;
   padding: $input-container-padding;
-  margin: 18px 0;
+  margin: $input-margin-top-bottom 0;
   vertical-align: middle;
 
   &.md-block {
@@ -96,7 +97,9 @@ md-input-container {
       overflow: auto;
     }
   }
-
+  label{
+    font-weight:normal;
+  }
   label:not(.md-container-ignore) {
     position: absolute;
     bottom: 100%;

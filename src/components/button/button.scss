@@ -10,7 +10,7 @@ $button-font-size-dense: $body-font-size-base * 13/14 !default;
 
 $button-line-height: rem(3.60) !default;
 $button-line-height-dense: rem(3.20) !default;
-$button-margin: rem(0.600) rem(0.800) !default;
+$button-margin: rem(0.200) rem(0.800) !default;
 $button-min-width: rem(8.800) !default;
 $button-padding: 0 $button-left-right-padding !default;
 
@@ -25,7 +25,7 @@ $button-fab-toast-offset: $button-fab-height * 0.75 !default;
 
 $icon-button-height: rem(4.000) !default;
 $icon-button-width: rem(4.000) !default;
-$icon-button-margin: rem(0.600) !default;
+$icon-button-margin: rem(0.200) !default;
 
 // Fix issue causing buttons in Firefox to be 2px bigger than they should
 button.md-button::-moz-focus-inner {
